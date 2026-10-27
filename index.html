@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protocolo de Desactivación</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="main-container">
+    
+    <!-- PANEL SUPERIOR -->
+    <header class="top-panel">
+      <div class="panel-box">
+        <span class="label">TIEMPO RESTANTE</span>
+        <div id="timer" class="display-main">05:00</div>
+        <button id="btn-music" class="btn btn-audio top-audio" onclick="toggleMusic()">🔊 MÚSICA: ON</button>
+      </div>
+
+      <div class="panel-box">
+        <span class="label">ERRORES (STRIKES)</span>
+        <div id="strikes" class="display-strikes">
+          <span>X</span> <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+        </div>
+      </div>
+
+      <div class="panel-box info-grid">
+        <div><span class="label">SERIE:</span> <strong id="serial-num">------</strong></div>
+        <div class="battery-status">
+          <span class="label">BATERÍAS:</span>
+          <div id="battery-display" class="battery-display" aria-label="0 baterías">
+            <span class="battery-cell"></span>
+            <span class="battery-cell"></span>
+            <span class="battery-cell"></span>
+            <span class="battery-cell"></span>
+          </div>
+          <strong id="bat-count">0</strong>
+        </div>
+        <div class="pwr-status">
+          <span class="label">PWR:</span>
+          <div id="pwr-indicator" class="pwr-indicator">
+            <div id="led-pwr" class="led"></div>
+            <strong id="pwr-label">OFF</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-box session-info">
+        <div><span class="label">MÓDULOS:</span> <strong id="progress-count">0/3</strong></div>
+        <div><span class="label">DIFICULTAD:</span> <strong id="difficulty-label">DIFÍCIL</strong></div>
+      </div>
+
+      <div class="header-actions">
+        <a id="manual-link" href="manual.html?difficulty=hard" target="_blank" class="btn btn-manual">📄 ABRIR MANUAL</a>
+      </div>
+    </header>
+
+    <div id="game-feedback" class="game-feedback" role="status" aria-live="polite"></div>
+
+    <!-- GRILLA DE MÓDULOS -->
+    <main class="modules-grid">
+
+      <!-- MÓDULO 01: CABLES -->
+      <section class="module">
+        <div class="module-header">
+          <span class="module-title">MOD-01 // CABLES</span>
+          <div id="st-wires" class="module-status"></div>
+        </div>
+        <div id="wires-list" class="wires-container"></div>
+      </section>
+
+      <!-- MÓDULO 02: KEYPAD -->
+      <section class="module">
+        <div class="module-header">
+          <span class="module-title">MOD-02 // KEYPAD</span>
+          <div id="st-keypad" class="module-status"></div>
+        </div>
+        <div id="keypad-input" class="keypad-display">____</div>
+        <div class="keypad-grid">
+          <button class="btn-num" onclick="pressKey('1')">1</button>
+          <button class="btn-num" onclick="pressKey('2')">2</button>
+          <button class="btn-num" onclick="pressKey('3')">3</button>
+          <button class="btn-num" onclick="pressKey('4')">4</button>
+          <button class="btn-num" onclick="pressKey('5')">5</button>
+          <button class="btn-num" onclick="pressKey('6')">6</button>
+          <button class="btn-num" onclick="pressKey('7')">7</button>
+          <button class="btn-num" onclick="pressKey('8')">8</button>
+          <button class="btn-num" onclick="pressKey('9')">9</button>
+          <button class="btn-action btn-danger" onclick="clearKeypad()">C</button>
+          <button class="btn-num" onclick="pressKey('0')">0</button>
+          <button class="btn-action btn-success" onclick="submitKeypad()">OK</button>
+        </div>
+      </section>
+
+      <!-- MÓDULO 03: INTERRUPTORES -->
+      <section class="module">
+        <div class="module-header">
+          <span class="module-title">MOD-03 // SWITCHES</span>
+          <div id="st-switches" class="module-status"></div>
+        </div>
+        <div class="switches-container">
+          <div class="switch-item">
+            <span>SW 1</span>
+            <div id="sw-0" class="toggle-switch" onclick="toggleSwitch(0)"></div>
+          </div>
+          <div class="switch-item">
+            <span>SW 2</span>
+            <div id="sw-1" class="toggle-switch" onclick="toggleSwitch(1)"></div>
+          </div>
+          <div class="switch-item">
+            <span>SW 3</span>
+            <div id="sw-2" class="toggle-switch" onclick="toggleSwitch(2)"></div>
+          </div>
+        </div>
+        <button class="btn btn-action" onclick="submitSwitches()">VERIFICAR</button>
+      </section>
+
+      <!-- MÓDULO 04: SIMÓN DICE -->
+      <section class="module">
+        <div class="module-header">
+          <span class="module-title">MOD-04 // LUCES</span>
+          <div id="st-simon" class="module-status"></div>
+        </div>
+        <div class="simon-grid">
+          <div id="simon-btn-0" class="simon-btn simon-red" onclick="pressSimon(0)"></div>
+          <div id="simon-btn-1" class="simon-btn simon-blue" onclick="pressSimon(1)"></div>
+          <div id="simon-btn-2" class="simon-btn simon-yellow" onclick="pressSimon(2)"></div>
+          <div id="simon-btn-3" class="simon-btn simon-green" onclick="pressSimon(3)"></div>
+        </div>
+        <button id="simon-start-btn" class="btn btn-action" onclick="playSimonSequence()">MOSTRAR SECUENCIA</button>
+      </section>
+
+      <!-- MÓDULO 05: CONDENSADOR -->
+      <section class="module">
+        <div class="module-header">
+          <span class="module-title">MOD-05 // CAPACITOR</span>
+          <div id="st-capacitor" class="module-status"></div>
+        </div>
+        <div class="capacitor-readout">
+          <span>CARGA ACUMULADA</span>
+          <strong id="capacitor-value">0%</strong>
+        </div>
+        <div class="capacitor-track" role="progressbar" aria-label="Carga del condensador" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="capacitor-bar" class="capacitor-bar"></div>
+        </div>
+        <div class="capacitor-scale"><span>0</span><span>25</span><span>50</span><span>75</span><span>100% CRÍTICO</span></div>
+        <p id="capacitor-cooldown" class="capacitor-status">PURGA DISPONIBLE</p>
+        <div class="capacitor-actions">
+          <button class="btn btn-action btn-warning" onclick="purgeCapacitor()">PURGAR -25%</button>
+          <button class="btn btn-action btn-danger" onclick="fullyDischargeCapacitor()">DESCARGA EMERGENCIA</button>
+        </div>
+        <button class="btn btn-action btn-controlled" onclick="controlledDischargeCapacitor()">DESCARGA CONTROLADA</button>
+        <div class="resonance-control">
+          <span class="label">FRECUENCIA DE RESONANCIA</span>
+          <div class="resonance-levels">
+            <button class="resonance-level" onclick="selectCapacitorResonance(1)">1</button>
+            <button class="resonance-level" onclick="selectCapacitorResonance(2)">2</button>
+            <button class="resonance-level" onclick="selectCapacitorResonance(3)">3</button>
+            <button class="resonance-level" onclick="selectCapacitorResonance(4)">4</button>
+          </div>
+          <button class="btn btn-action btn-success" onclick="resonantDischargeCapacitor()">DESCARGA RESONANTE</button>
+        </div>
+      </section>
+
+      <!-- MÓDULO 06: MEMORIA -->
+      <section class="module">
+        <div class="module-header">
+          <span class="module-title">MOD-06 // 7-SEG MEMORY</span>
+          <div id="st-memory" class="module-status"></div>
+        </div>
+        <div class="memory-meta">
+          <span id="memory-round">RONDA 1/4</span>
+          <span class="label">VALOR MOSTRADO</span>
+        </div>
+        <div id="memory-display" class="memory-display">1</div>
+        <p id="memory-instruction" class="memory-instruction"></p>
+        <div class="memory-grid">
+          <button class="btn-num" onclick="pressMemory(0)">1</button>
+          <button class="btn-num" onclick="pressMemory(1)">2</button>
+          <button class="btn-num" onclick="pressMemory(2)">3</button>
+          <button class="btn-num" onclick="pressMemory(3)">4</button>
+        </div>
+      </section>
+
+      <!-- MÓDULO 07: VÁLVULA -->
+      <section class="module">
+        <div class="module-header">
+          <span class="module-title">MOD-07 // PRESSURE VALVE</span>
+          <div id="st-valve" class="module-status"></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-scale"><span>BAJA</span><span>MEDIA</span><span>ALTA</span><span>MÁX.</span></div>
+          <div id="valve-needle" class="valve-needle"></div>
+          <div class="gauge-center"></div>
+        </div>
+        <span class="label valve-label">ELIGE LA PRESIÓN</span>
+        <div class="valve-levels">
+          <button class="valve-level selected" onclick="selectValveLevel(1)">1<br><small>BAJA</small></button>
+          <button class="valve-level" onclick="selectValveLevel(2)">2<br><small>MEDIA</small></button>
+          <button class="valve-level" onclick="selectValveLevel(3)">3<br><small>ALTA</small></button>
+          <button class="valve-level" onclick="selectValveLevel(4)">4<br><small>MÁX.</small></button>
+        </div>
+        <button class="btn btn-action" onclick="adjustValve()">BLOQUEAR VÁLVULA</button>
+      </section>
+
+      <!-- MÓDULO 08: COMUNICACIÓN -->
+      <section class="module communication-module">
+        <div class="module-header">
+          <span class="module-title">MOD-08 // SIGNAL LINK</span>
+          <div id="st-communication" class="module-status"></div>
+        </div>
+        <p class="communication-help">SELECCIONA UNA SALIDA Y CONÉCTALA A SU ENTRADA</p>
+        <div id="communication-board" class="communication-board">
+          <svg id="communication-wire-layer" class="communication-wire-layer" aria-hidden="true"></svg>
+          <div class="communication-column">
+            <span class="label">SALIDAS</span>
+            <button id="com-source-0" class="communication-terminal communication-source" onclick="selectCommunicationSource(0)">OUT 1</button>
+            <button id="com-source-1" class="communication-terminal communication-source" onclick="selectCommunicationSource(1)">OUT 2</button>
+            <button id="com-source-2" class="communication-terminal communication-source" onclick="selectCommunicationSource(2)">OUT 3</button>
+            <button id="com-source-3" class="communication-terminal communication-source" onclick="selectCommunicationSource(3)">OUT 4</button>
+          </div>
+          <div class="signal-lines" aria-hidden="true">↔<br>↔<br>↔<br>↔</div>
+          <div class="communication-column">
+            <span class="label">ENTRADAS</span>
+            <button id="com-target-0" class="communication-terminal communication-target" onclick="connectCommunicationTarget(0)">IN 1</button>
+            <button id="com-target-1" class="communication-terminal communication-target" onclick="connectCommunicationTarget(1)">IN 2</button>
+            <button id="com-target-2" class="communication-terminal communication-target" onclick="connectCommunicationTarget(2)">IN 3</button>
+            <button id="com-target-3" class="communication-terminal communication-target" onclick="connectCommunicationTarget(3)">IN 4</button>
+          </div>
+        </div>
+        <p id="communication-status" class="communication-status">SELECCIONA UNA SALIDA</p>
+        <button class="btn btn-action btn-success" onclick="transmitCommunication()">TRANSMITIR</button>
+      </section>
+
+    </main>
+
+    <!-- PANEL INFERIOR CONTROLES -->
+    <footer class="bottom-panel">
+      <button class="btn btn-reset" onclick="pedirConfirmacionReiniciar()">REINICIAR PARTIDA</button>
+      <button class="btn btn-menu" onclick="showMainMenu()">VOLVER AL MENÚ</button>
+    </footer>
+
+  </div>
+
+  <!-- MODAL CONFIRMACIÓN -->
+  <div id="modal-confirm" class="modal">
+    <div class="modal-content confirm-box">
+      <h2>⚠️ ¿REINICIAR SECUENCIA?</h2>
+      <p>Se restablecerán todos los módulos y el temporizador.</p>
+      <div class="modal-buttons">
+        <button class="btn btn-danger" onclick="confirmarReiniciar(true)">SÍ, REINICIAR</button>
+        <button class="btn btn-secondary" onclick="confirmarReiniciar(false)">NO, CANCELAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EXPLOSIÓN -->
+  <div id="modal-boom" class="modal">
+    <div class="modal-content boom-box">
+      <div class="status-badge danger">CRITICAL SYSTEM FAILURE</div>
+      <h1 class="glitch-text">💥 DETONACIÓN</h1>
+      <p>El núcleo se ha sobrecalentado. Secuencia de contención fallida.</p>
+      <button class="btn btn-manual btn-large" onclick="toggleSolutions()">MOSTRAR SOLUCIONES</button>
+      <div id="boom-solutions" class="boom-solutions" hidden>
+        <h2>SOLUCIONES DE LA PARTIDA</h2>
+        <div id="solution-list"></div>
+      </div>
+      <div class="modal-buttons modal-buttons-stack">
+        <button class="btn btn-reset btn-large" onclick="restartGame()">REINTENTAR</button>
+        <button class="btn btn-secondary btn-large" onclick="showMainMenu()">CAMBIAR DIFICULTAD</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VICTORIA -->
+  <div id="modal-win" class="modal">
+    <div class="modal-content win-box">
+      <div class="status-badge success">SYSTEM SECURED</div>
+      <h1 class="glow-text">🎉 DESACTIVADO</h1>
+      <p>Amenaza neutralizada con éxito. Todos los módulos respondieron correctamente.</p>
+      <div class="win-stats">
+        <span>TIEMPO: <strong id="win-time">00:00</strong></span>
+        <span>STRIKES: <strong id="win-strikes">0</strong></span>
+      </div>
+      <div class="modal-buttons modal-buttons-stack">
+        <button class="btn btn-success btn-large" onclick="restartGame()">NUEVA PARTIDA</button>
+        <button class="btn btn-secondary btn-large" onclick="showMainMenu()">CAMBIAR DIFICULTAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="capacitor-warning" class="capacitor-warning" role="alert" aria-live="assertive">
+    <strong>ADVERTENCIA DEL CAPACITOR</strong>
+          <span>La carga se aproxima al máximo. Usa una ruta de descarga válida.</span>
+  </div>
+
+  <div id="main-menu" class="modal main-menu active">
+    <div class="modal-content menu-box">
+      <div class="status-badge danger">PROTOCOLO DE DESACTIVACIÓN</div>
+      <h1>DESARME LA BOMBA</h1>
+          <p>Dos operadores. Un manual. Tres módulos aleatorios. Trabajen en equipo.</p>
+      <label class="menu-label" for="menu-difficulty">SELECCIONA LA DIFICULTAD</label>
+      <select id="menu-difficulty" class="menu-difficulty">
+          <option value="easy">FÁCIL · 10:00 · 5 VIDAS</option>
+          <option value="medium">MEDIO · 07:00 · 4 VIDAS</option>
+          <option value="hard" selected>DIFÍCIL · 05:00 · 3 VIDAS</option>
+      </select>
+      <div class="difficulty-details">
+        <strong>FÁCIL:</strong> más tiempo y más oportunidades.<br>
+        <strong>MEDIO:</strong> equilibrio entre tiempo y errores.<br>
+        <strong>DIFÍCIL:</strong> configuración original para expertos.
+      </div>
+      <button class="btn btn-success btn-large" onclick="startGame()">INICIAR PARTIDA</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

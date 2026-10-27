@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blueprint // Manual de Desactivación</title>
+  <style>
+    :root {
+      --bp-bg: #0b1d3a;
+      --bp-grid-major: rgba(0, 162, 255, 0.25);
+      --bp-grid-minor: rgba(0, 162, 255, 0.08);
+      --bp-line: #00bfff;
+      --bp-line-dim: rgba(0, 191, 255, 0.4);
+      --bp-text: #e0f2fe;
+      --bp-yellow: #ffb700;
+      --bp-white: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bp-bg);
+      color: var(--bp-text);
+      font-family: 'Courier New', Courier, monospace;
+      padding: 30px 20px;
+      line-height: 1.5;
+      min-height: 100vh;
+      /* FONDO RETÍCULA BLUEPRINT */
+      background-image: 
+        linear-gradient(var(--bp-grid-major) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bp-grid-major) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid-minor) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bp-grid-minor) 1px, transparent 1px);
+      background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+      background-position: -1px -1px;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+      border: 3px double var(--bp-line);
+      padding: 25px;
+      background: rgba(11, 29, 58, 0.75);
+      position: relative;
+    }
+
+    /* MARCAS DE ESQUINA DE PLANO TÉCNICO */
+    .container::before, .container::after {
+      content: "";
+      position: absolute;
+      width: 20px; height: 20px;
+      border: 2px solid var(--bp-line);
+    }
+    .container::before { top: -6px; left: -6px; border-right: none; border-bottom: none; }
+    .container::after { bottom: -6px; right: -6px; border-left: none; border-top: none; }
+
+    /* CABECERA / CAJETÍN DE PLANO */
+    header {
+      border: 2px solid var(--bp-line);
+      margin-bottom: 35px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      background: rgba(0, 191, 255, 0.05);
+    }
+
+    .header-main {
+      padding: 20px;
+      border-right: 2px solid var(--bp-line);
+    }
+
+    .header-main h1 {
+      font-size: 1.8rem;
+      color: var(--bp-white);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .header-main p {
+      font-size: 0.85rem;
+      color: var(--bp-line-dim);
+      margin-top: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .header-meta {
+      padding: 15px;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: var(--bp-line);
+    }
+
+    .header-meta div {
+      border-bottom: 1px dashed var(--bp-line-dim);
+      padding-bottom: 4px;
+    }
+    .header-meta div:last-child { border-bottom: none; }
+
+    /* SECCIONES MÓDULO */
+    .section-card {
+      border: 1px solid var(--bp-line-dim);
+      margin-bottom: 30px;
+      padding: 20px;
+      position: relative;
+      background: rgba(11, 29, 58, 0.6);
+      box-shadow: inset 0 0 15px rgba(0, 191, 255, 0.05);
+    }
+
+    .section-card::before {
+      content: attr(data-schematic);
+      position: absolute;
+      top: -10px; right: 15px;
+      background: var(--bp-bg);
+      padding: 0 8px;
+      font-size: 0.7rem;
+      color: var(--bp-line);
+      border: 1px solid var(--bp-line-dim);
+      letter-spacing: 1px;
+    }
+
+    /* TITULOS ESQUEMÁTICOS */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px dashed var(--bp-line-dim);
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .section-header .tag {
+      background: var(--bp-line);
+      color: var(--bp-bg);
+      font-weight: bold;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      color: var(--bp-white);
+      text-transform: uppercase;
+    }
+
+    /* REGLAS Y LISTAS */
+    .rules-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rules-list li {
+      position: relative;
+      padding-left: 25px;
+      font-size: 0.9rem;
+      color: var(--bp-text);
+    }
+
+    .rules-list li::before {
+      content: "├─";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--bp-line);
+      font-weight: bold;
+    }
+
+    .rules-list li:last-child::before {
+      content: "└─";
+    }
+
+    .highlight {
+      color: var(--bp-white);
+      font-weight: bold;
+      border-bottom: 1px solid var(--bp-line);
+      padding: 0 4px;
+    }
+
+    .bp-warn {
+      color: var(--bp-yellow);
+      border-bottom-color: var(--bp-yellow);
+    }
+
+    /* ESQUEMA GRÁFICO TIPO PLANO */
+    .blueprint-box {
+      margin-top: 15px;
+      border: 1px dashed var(--bp-line-dim);
+      padding: 10px 15px;
+      background: rgba(0, 191, 255, 0.03);
+      font-size: 0.8rem;
+      color: var(--bp-line);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .blueprint-box::before {
+      content: "[ DIAGRAMA ]";
+      font-weight: bold;
+      color: var(--bp-white);
+    }
+
+    /* PIE DE PLANO */
+    footer {
+      margin-top: 40px;
+      border-top: 2px solid var(--bp-line);
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--bp-line-dim);
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 700px) {
+      header { grid-template-columns: 1fr; }
+      .header-main { border-right: none; border-bottom: 2px solid var(--bp-line); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- CAJETÍN DE PLANO TÉCNICO -->
+    <header>
+      <div class="header-main">
+        <h1>PLANO DE DESACTIVACIÓN</h1>
+        <p>ESPECIFICACIONES TÉCNICAS Y PROTOCOLO DE DESARME</p>
+      </div>
+      <div class="header-meta">
+        <div><strong>PLANO N°:</strong> BP-2026-X8</div>
+        <div><strong>ESCALA:</strong> 1:1</div>
+        <div><strong>ESTADO:</strong> APROBADO</div>
+      </div>
+    </header>
+
+    <!-- MÓDULO 01: CABLES -->
+    <article class="section-card" data-schematic="SCH-01 // WIRE-ARRAY">
+      <div class="section-header">
+        <span class="tag">MOD-01</span>
+        <h2>MATRIZ DE CABLES DE CORRIENTE</h2>
+      </div>
+      <p style="margin-bottom: 12px; font-size: 0.85rem; color: var(--bp-line-dim);">LÓGICA DE CORTE DE CABLES POR PRIORIDAD:</p>
+      <ul class="rules-list">
+        <li>Si el <span class="highlight">CABLE 1 es ROJO</span> y el último dígito del Número Serial de la bomba es <span class="highlight bp-warn">IMPAR</span> ➔ Cortar <strong>CABLE 3</strong>.</li>
+        <li>Si indicador <span class="highlight">PWR = ON</span> y existe al menos 1 cable <span class="highlight">AZUL</span> ➔ Cortar <strong>primer CABLE AZUL</strong>.</li>
+        <li>Si el último cable es <span class="highlight">BLANCO</span> o <span class="highlight">NEGRO</span> ➔ Cortar <strong>CABLE 8 (último)</strong>.</li>
+        <li>Si recuento de <span class="highlight">BATERÍAS ≥ 2</span> ➔ Cortar <strong>CABLE 2</strong>.</li>
+        <li>En cualquier otra condición no especificada ➔ Cortar <strong>CABLE 5</strong>.</li>
+      </ul>
+      <div class="blueprint-box">
+        ERR-01: Cortar la línea incorrecta cerrará el circuito de retroalimentación (STRIKE +1).
+      </div>
+    </article>
+
+    <!-- MÓDULO 02: KEYPAD -->
+    <article class="section-card" data-schematic="SCH-02 // KEYPAD-LOGIC">
+      <div class="section-header">
+        <span class="tag">MOD-02</span>
+        <h2>TECLADO NUMÉRICO (KEYPAD)</h2>
+      </div>
+      <p style="margin-bottom: 12px; font-size: 0.85rem; color: var(--bp-line-dim);">ALGORITMO DE CÁLCULO DE CLAVE:</p>
+      <ul class="rules-list">
+        <li>Cálculo base: <span class="highlight">[SUMA DE DÍGITOS NÚMERO SERIAL BOMBA] × 150</span></li>
+        <li>Añadir factor baterías: <span class="highlight">+ (CANT. BATERÍAS × 100)</span></li>
+        <li>Ajuste de energía: Si <span class="highlight">PWR = ON</span> sumar <strong>500</strong>. Si <span class="highlight">PWR = OFF</span> restar <strong>200</strong>.</li>
+        <li>Entrada requerida: Ingresar únicamente los <span class="highlight bp-warn">ÚLTIMOS 4 DÍGITOS</span> del valor resultante.</li>
+      </ul>
+      <div class="blueprint-box">
+        VAL = ABS((SUMA_NUMERO_SERIAL_BOMBA * 150) + (BAT * 100) + PWR_OFFSET) ➔ SLICE(-4)
+      </div>
+    </article>
+
+    <!-- MÓDULO 03: INTERRUPTORES -->
+    <article class="section-card" data-schematic="SCH-03 // SWITCH-MATRIX">
+      <div class="section-header">
+        <span class="tag">MOD-03</span>
+        <h2>CONMUTADORES (SWITCHES)</h2>
+      </div>
+      <p style="margin-bottom: 12px; font-size: 0.85rem; color: var(--bp-line-dim);">ESTADO REQUERIDO DE CONMUTACIÓN (ON / OFF):</p>
+      <ul class="rules-list">
+        <li><strong>SW-1 [ON]:</strong> Habilitar solo si N/S contiene al menos una <span class="highlight">VOCAL (A,E,I,O,U)</span>.</li>
+        <li><strong>SW-2 [ON]:</strong> Habilitar solo si <span class="highlight">PWR = ON</span> Y <span class="highlight">BATERÍAS ≥ 2</span>.</li>
+        <li><strong>SW-3 [ON]:</strong> Habilitar solo si existe algún cable <span class="highlight">AZUL</span> en MOD-01.</li>
+      </ul>
+    </article>
+
+    <!-- MÓDULO 04: SIMÓN DICE -->
+    <article class="section-card" data-schematic="SCH-04 // SIMON-LIGHTS">
+      <div class="section-header">
+        <span class="tag">MOD-04</span>
+        <h2>SECUENCIA LUMÍNICA (SIMÓN)</h2>
+      </div>
+      <p style="margin-bottom: 12px; font-size: 0.85rem; color: var(--bp-line-dim);">TABLA DE TRADUCCIÓN DE IMPULSOS:</p>
+      <ul class="rules-list">
+        <li>Si <span class="highlight">PWR = ON</span> (Inversión Rojo/Azul):
+          <ul>
+            <li>Flash <span class="highlight">ROJO</span> ➔ Presionar <strong>AZUL</strong></li>
+            <li>Flash <span class="highlight">AZUL</span> ➔ Presionar <strong>ROJO</strong></li>
+            <li>Amarillo y Verde ➔ Sin cambios.</li>
+          </ul>
+        </li>
+        <li>Si <span class="highlight">PWR = OFF</span> (Inversión Amarillo/Verde):
+          <ul>
+            <li>Flash <span class="highlight">AMARILLO</span> ➔ Presionar <strong>VERDE</strong></li>
+            <li>Flash <span class="highlight">VERDE</span> ➔ Presionar <strong>AMARILLO</strong></li>
+            <li>Rojo y Azul ➔ Sin cambios.</li>
+          </ul>
+        </li>
+      </ul>
+    </article>
+
+    <article class="section-card" data-schematic="SCH-05 // CAPACITOR">
+      <div class="section-header"><span class="tag">MOD-05</span><h2>CONDENSADOR DE DESCARGA</h2></div>
+      <ul class="rules-list">
+        <li>La carga aumenta automáticamente con cada segundo del temporizador.</li>
+        <li id="capacitor-difficulty-rule">Hay tres posibilidades de descarga; puedes elegir según la situación.</li>
+        <li><span class="highlight">DESCARGA CONTROLADA:</span> realizar 3 purgas y usarla con carga ≤ 25%.</li>
+        <li><span class="highlight">DESCARGA EMERGENCIA:</span> usar con carga ≥ 75% y BATERÍAS ≥ 2.</li>
+        <li id="capacitor-window-rule"><span class="highlight bp-warn">DESCARGA RESONANTE:</span> sumar los dígitos del número serial, añadir las baterías y añadir 2 si PWR está ON. Total 0-5 = nivel 1; 6-10 = nivel 2; 11-15 = nivel 3; 16 o más = nivel 4.</li>
+        <li>Si el capacitor alcanza 100% ocurre la detonación.</li>
+      </ul>
+    </article>
+
+    <article class="section-card" data-schematic="SCH-06 // MEMORY-7SEG">
+      <div class="section-header"><span class="tag">MOD-06</span><h2>SECUENCIA DE MEMORIA</h2></div>
+      <ul class="rules-list">
+        <li>Completa cuatro rondas; el número mostrado cambia en cada una.</li>
+        <li><span class="highlight">Ronda 1:</span> presiona la posición indicada por la pantalla.</li>
+        <li><span class="highlight">Ronda 2:</span> presiona la misma etiqueta que elegiste en la Ronda 1.</li>
+        <li><span class="highlight">Ronda 3:</span> usa la tabla de posiciones <strong>1→3, 2→1, 3→4, 4→2</strong>.</li>
+        <li><span class="highlight">Ronda 4:</span> usa la tabla de etiquetas <strong>1→2, 2→4, 3→1, 4→3</strong>.</li>
+      </ul>
+    </article>
+
+    <article class="section-card" data-schematic="SCH-07 // HEX-VALVE">
+      <div class="section-header"><span class="tag">MOD-07</span><h2>VÁLVULA DE PRESIÓN</h2></div>
+      <ul class="rules-list">
+        <li>La válvula tiene cuatro niveles: <strong>1 BAJA, 2 MEDIA, 3 ALTA y 4 MÁXIMA</strong>.</li>
+        <li>El nivel correcto empieza con la <span class="highlight">cantidad de baterías</span>.</li>
+        <li>Si <span class="highlight">PWR = ON</span>, sumar un nivel. Si el resultado es menor que 1, usar 1; si es mayor que 4, usar 4.</li>
+        <li>Elegir el nivel, observar la aguja y pulsar <span class="highlight bp-warn">BLOQUEAR VÁLVULA</span>.</li>
+      </ul>
+    </article>
+
+    <article class="section-card" data-schematic="SCH-08 // SIGNAL-LINK">
+      <div class="section-header"><span class="tag">MOD-08</span><h2>COMUNICACIÓN / CABLEADO DE SEÑAL</h2></div>
+      <ul class="rules-list">
+        <li>Conectar cada salida <strong>OUT</strong> con su entrada <strong>IN</strong> y pulsar <span class="highlight bp-warn">TRANSMITIR</span>.</li>
+        <li>La conexión base es <strong>OUT 1→IN 1, OUT 2→IN 2, OUT 3→IN 3, OUT 4→IN 4</strong>.</li>
+        <li>Si el último dígito numérico del N/S es <span class="highlight">PAR</span>, invertir la conexión: <strong>1→4, 2→3, 3→2, 4→1</strong>.</li>
+        <li>Si <span class="highlight">PWR = ON</span>, intercambiar las conexiones de OUT 2 y OUT 3.</li>
+        <li>Si hay <span class="highlight">BATERÍAS ≥ 2</span>, desplazar cada entrada una posición hacia la siguiente.</li>
+        <li>Una conexión incorrecta o transmitir antes de completar las cuatro conexiones provoca <strong>STRIKE +1</strong>.</li>
+      </ul>
+    </article>
+
+    <footer>
+      <span>CÓDIGO DE DOCUMENTO: BLU-7721-REV3</span>
+      <span>SOLO PARA USO OFICIAL EN CAMPO</span>
+    </footer>
+
+  </div>
+
+  <script>
+    const difficulty = new URLSearchParams(window.location.search).get('difficulty') || 'hard';
+    const difficultyRules = {
+      easy: {
+        title: 'MANUAL DE DESACTIVACIÓN // FÁCIL',
+        difficulty: 'Hay tres rutas de descarga; puedes elegir según la situación.',
+        window: 'Suma los dígitos del serial, añade las baterías y 2 si PWR está ON. Usa los rangos 0-5, 6-10, 11-15 y 16+ para elegir los niveles 1, 2, 3 y 4.'
+      },
+      medium: {
+        title: 'MANUAL DE DESACTIVACIÓN // MEDIO',
+        difficulty: 'Hay tres rutas de descarga; puedes elegir según la situación.',
+        window: 'Suma los dígitos del serial, añade las baterías y 2 si PWR está ON. Usa los rangos 0-5, 6-10, 11-15 y 16+ para elegir los niveles 1, 2, 3 y 4.'
+      },
+      hard: {
+        title: 'MANUAL DE DESACTIVACIÓN // DIFÍCIL',
+        difficulty: 'Hay tres rutas de descarga; puedes elegir según la situación.',
+        window: 'Suma los dígitos del serial, añade las baterías y 2 si PWR está ON. Usa los rangos 0-5, 6-10, 11-15 y 16+ para elegir los niveles 1, 2, 3 y 4.'
+      }
+    };
+    const rules = difficultyRules[difficulty] || difficultyRules.hard;
+    document.title = rules.title;
+    document.querySelector('.header-main h1').innerText = rules.title;
+    document.getElementById('capacitor-difficulty-rule').innerText = rules.difficulty;
+    document.getElementById('capacitor-window-rule').innerText = rules.window;
+  </script>
+
+</body>
+</html>
